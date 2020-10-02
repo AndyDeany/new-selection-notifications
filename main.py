@@ -6,6 +6,8 @@ import email
 from notify import notify
 
 
+INTERVAL = 5.0
+
 EMAIL_ADDRESS = "newselectionnotifications@gmail.com"
 PASSWORD = "OverwhelmingDustStorm14&"
 IMAP_ADDRESS = "imap.gmail.com"
@@ -48,7 +50,7 @@ def notify_from_email(subject, body):
     system = tidied(body_match["system"])
 
     if notification_type == "NEW-SELECTION":
-        notify(f"<@203581825451425792> New selection ({system}): **{horse}** ({time} {course})")
+        notify(f"<@&757791393035845742> New selection ({system}): **{horse}** ({time} {course})")
     elif notification_type == "NON-RUNNER":
         notify(f"Non-runner ({system}): {horse} ({time} {course})")
     else:
@@ -88,7 +90,7 @@ def loop():
 def main():
     while True:
         loop()
-        sleep(5)
+        sleep(INTERVAL)
 
 
 if __name__ == "__main__":
