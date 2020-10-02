@@ -3,13 +3,18 @@ import re
 import imaplib
 import email
 
+import yaml
+
 from notify import notify
 
 
 INTERVAL = 5.0
 
-EMAIL_ADDRESS = "newselectionnotifications@gmail.com"
-PASSWORD = "OverwhelmingDustStorm14&"
+with open("credentials.yml") as credentials_yaml:
+    credentials = yaml.safe_load(credentials_yaml)
+
+EMAIL_ADDRESS = credentials["email"]
+PASSWORD = credentials["password"]
 IMAP_ADDRESS = "imap.gmail.com"
 IMAP_PORT = 993
 
