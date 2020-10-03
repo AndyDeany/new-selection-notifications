@@ -59,7 +59,11 @@ def notify_from_email(subject, body):
     system = tidied(body_match["system"])
 
     if notification_type == "NEW-SELECTION":
-        notify(f"<@&757791393035845742> New selection ({system}): **{horse}** ({time} {course})")
+        if system == "6LTO":
+            role = "761914927127593000"     # @BSP
+        else:
+            role = "757791393035845742"     # @Notifications
+        notify(f"<@&{role}> New selection ({system}): **{horse}** ({time} {course})")
     elif notification_type == "NON-RUNNER":
         notify(f"Non-runner ({system}): {horse} ({time} {course})")
     else:
