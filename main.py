@@ -1,4 +1,6 @@
 from time import sleep
+import sys
+import traceback
 import re
 import imaplib
 import email
@@ -94,7 +96,10 @@ def loop():
 
 def main():
     while True:
-        loop()
+        try:
+            loop()
+        except Exception:
+            traceback.print_exc(file=sys.stdout)
         sleep(INTERVAL)
 
 
