@@ -1,4 +1,5 @@
 from time import sleep
+from datetime import datetime
 import sys
 import traceback
 import re
@@ -28,6 +29,11 @@ SWAP_BET_BODY_REGEX = r"NREP TO +NEW System\: (?P<new_system>{0}), FROM +OLD Sys
 
 mail = imaplib.IMAP4_SSL(IMAP_ADDRESS)
 mail.login(EMAIL_ADDRESS, PASSWORD)
+
+
+def log(string):
+    """Write the given string to log."""
+    print(f"[{datetime.now().isoformat()}] {string}")
 
 
 def retrieve_emails():
@@ -71,7 +77,7 @@ def notify_from_email(subject, body):
 
 
 def get_email_and_notify(email_id):
-    print(f"[INFO] Processing email with {email_id=}...")
+    log(f"[INFO] Processing email with {email_id=}...")
     response_code, data = mail.fetch(email_id, "(RFC822)")
     if not response_code == "OK":
         raise Exception(f"Failed to retrieve email with id={email_id}.")
@@ -86,7 +92,7 @@ def get_email_and_notify(email_id):
     body = body.replace("\r\n", "")
 
     notify_from_email(subject, body)
-    print(f"[INFO] Processing of email with {email_id=} complete.\n")
+    log(f"[INFO] Processing of email with {email_id=} complete.\n")
 
 
 def tidied(system):
@@ -113,7 +119,7 @@ def loop():
         try:
             get_email_and_notify(email_id)
         except Exception:
-            print(f"[WARNING] Exception caught whilst processing email with {email_id=}.")
+            log(f"[WARNING] Exception caught whilst processing email with {email_id=}.")
             traceback.print_exc(file=sys.stdout)
             print("")
 
@@ -123,7 +129,7 @@ def main():
         try:
             loop()
         except Exception:
-            print("[ERROR] Exception caught whilst running loop().")
+            log("[ERROR] Exception caught whilst running loop().")
             traceback.print_exc(file=sys.stdout)
             print("")
         sleep(INTERVAL)
