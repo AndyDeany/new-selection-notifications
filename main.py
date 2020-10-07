@@ -5,6 +5,7 @@ import traceback
 import re
 import imaplib
 import email
+import codecs
 
 import yaml
 
@@ -22,10 +23,17 @@ IMAP_ADDRESS = "imap.gmail.com"
 IMAP_PORT = 993
 
 
+SYSTEM_TN2 = "JR-TN2"
+SYSTEM_DTR = "JR-DTR"
+SYSTEM_MR3 = "JR-MR3.2"
+SYSTEM_LT6R = "JR - LT6R"
+SYSTEM_6LTO = "JR &gt;=6 + jockey"
+SYSTEMS = (SYSTEM_TN2, SYSTEM_DTR, SYSTEM_MR3, SYSTEM_LT6R, SYSTEM_6LTO)
+
 SUBJECT_REGEX = r"PROFORM (?P<type>NEW\-SELECTION|NON\-RUNNER|SWAP BET) \((?P<horse>[a-zA-Z ]+)\-(?P<time>[0-9]{2}\:[0-9]{2})\-(?P<course>[a-zA-Z ]+)\)"
-SYSTEM_REGEX = r"JR\-TN2|JR\-DTR|JR\-MR3\.2|JR - LT6R|JR &gt;=3D6 \+ jo=ckey"
+SYSTEM_REGEX = r"|".join((system.replace(r".", r"\.").replace(r"+", r"\+") for system in SYSTEMS))
 BODY_REGEX = r"NREP System: +(?P<system>{})".format(SYSTEM_REGEX)
-SWAP_BET_BODY_REGEX = r"NREP TO +NEW System\: (?P<new_system>{0}), FROM +OLD System\: (?P<old_system>{0})".format(SYSTEM_REGEX)
+SWAP_BET_BODY_REGEX = r"NREP TO +NEW System\: (?P<new_system>{0}), FROM +=?OLD System\: (?P<old_system>{0})".format(SYSTEM_REGEX)
 
 mail = imaplib.IMAP4_SSL(IMAP_ADDRESS)
 mail.login(EMAIL_ADDRESS, PASSWORD)
@@ -34,6 +42,22 @@ mail.login(EMAIL_ADDRESS, PASSWORD)
 def log(string):
     """Write the given string to log."""
     print(f"[{datetime.now().isoformat()}] {string}")
+
+
+def tidied(system):
+    """Return the tidy version of the given system name."""
+    if system == SYSTEM_TN2:
+        return "TN2"
+    elif system == SYSTEM_DTR:
+        return "DTR"
+    elif system == SYSTEM_MR3:
+        return "MR3"
+    elif system == SYSTEM_LT6R:
+        return "LT6R"
+    elif system == SYSTEM_6LTO:
+        return "6LTO"
+    else:
+        raise ValueError(f"Unknown system: '{system}'.")
 
 
 def retrieve_emails():
@@ -48,6 +72,7 @@ def retrieve_emails():
 
 def notify_from_email(subject, body):
     """Send a Discord notification about the information in the given email."""
+    log(f"[INFO] Subject: {subject}\nBody: {body}")
     subject_match = re.match(SUBJECT_REGEX, subject)
     notification_type = subject_match["type"]
     horse = subject_match["horse"]
@@ -89,26 +114,11 @@ def get_email_and_notify(email_id):
     else:
         body = re.sub(r"<[^>]+>", "", message.get_payload())    # Removing html tags
 
-    body = body.replace("\r\n", "")
+    body = codecs.decode(bytes(body, "utf-8"), "quopri").decode("utf-8")    # Properly decode body
+    body = body.replace("\r\n", "")     # Remove newlines
 
     notify_from_email(subject, body)
     log(f"[INFO] Processing of email with {email_id=} complete.\n")
-
-
-def tidied(system):
-    """Return the tidy version of the given system name."""
-    if system == "JR-TN2":
-        return "TN2"
-    elif system == "JR-DTR":
-        return "DTR"
-    elif system == "JR-MR3" or system == "JR-MR3.2":
-        return "MR3"
-    elif system == "JR - LT6R":
-        return "LT6R"
-    elif system == "JR &gt;=3D6 + jo=ckey":
-        return "6LTO"
-    else:
-        raise ValueError(f"Unknown system: '{system}'.")
 
 
 def loop():
