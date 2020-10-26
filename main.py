@@ -30,7 +30,7 @@ SYSTEM_LT6R = "JR - LT6R"
 SYSTEM_6LTO = "JR &gt;=6 + jockey"
 SYSTEMS = (SYSTEM_TN2, SYSTEM_DTR, SYSTEM_MR3, SYSTEM_LT6R, SYSTEM_6LTO)
 
-SUBJECT_REGEX = r"PROFORM (?P<type>NEW\-SELECTION|NON\-RUNNER|SWAP BET) \((?P<horse>[a-zA-Z ]+)\-(?P<time>[0-9]{2}\:[0-9]{2})\-(?P<course>[a-zA-Z ]+)\)"
+SUBJECT_REGEX = r"PROFORM (?P<type>NEW\-SELECTION|NON\-RUNNER|SWAP BET) \((?P<horse>[a-zA-Z ']+)\-(?P<time>[0-9]{2}\:[0-9]{2})\-(?P<course>[a-zA-Z ]+)\)"
 SYSTEM_REGEX = r"|".join((system.replace(r".", r"\.").replace(r"+", r"\+") for system in SYSTEMS))
 BODY_REGEX = r"NREP System: +(?P<system>{})".format(SYSTEM_REGEX)
 SWAP_BET_BODY_REGEX = r"NREP TO +NEW System\: (?P<new_system>{0}), FROM +=?OLD System\: (?P<old_system>{0})".format(SYSTEM_REGEX)
