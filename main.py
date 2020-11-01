@@ -83,7 +83,7 @@ def notify_from_email(subject, body):
         body_match = re.match(SWAP_BET_BODY_REGEX, body)
         old_system = tidied(body_match["old_system"])
         new_system = tidied(body_match["new_system"])
-        notify(f"Swap bet ({old_system} -> {new_system}): {horse} ({time} {course})")
+        notify(f":warning: <@&757791393035845742> Swap bet ({old_system} -> {new_system}): {horse} ({time} {course}) :warning:")
         return
 
     body_match = re.match(BODY_REGEX, body)
