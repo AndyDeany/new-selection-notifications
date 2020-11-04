@@ -27,8 +27,11 @@ SYSTEM_TN2 = "JR-TN2"
 SYSTEM_DTR = "JR-DTR"
 SYSTEM_MR3 = "JR-MR3.2"
 SYSTEM_LT6R = "JR - LT6R"
+SYSTEM_PnJ = "pace+jockey"
+SYSTEM_ACCAS = "JR - ACCAS"
+SYSTEM_JLT2 = "JR-JLT2"
 SYSTEM_6LTO = "JR &gt;=6 + jockey"
-SYSTEMS = (SYSTEM_TN2, SYSTEM_DTR, SYSTEM_MR3, SYSTEM_LT6R, SYSTEM_6LTO)
+SYSTEMS = (SYSTEM_TN2, SYSTEM_DTR, SYSTEM_MR3, SYSTEM_LT6R, SYSTEM_PnJ, SYSTEM_ACCAS, SYSTEM_JLT2, SYSTEM_6LTO)
 
 SUBJECT_REGEX = r"PROFORM (?P<type>NEW\-SELECTION|NON\-RUNNER|SWAP BET) \((?P<horse>[a-zA-Z ']+)\-(?P<time>[0-9]{2}\:[0-9]{2})\-(?P<course>[a-zA-Z ]+)\)"
 SYSTEM_REGEX = r"|".join((system.replace(r".", r"\.").replace(r"+", r"\+") for system in SYSTEMS))
@@ -46,17 +49,18 @@ def log(string):
 
 def tidied(system):
     """Return the tidy version of the given system name."""
-    if system == SYSTEM_TN2:
-        return "TN2"
-    elif system == SYSTEM_DTR:
-        return "DTR"
-    elif system == SYSTEM_MR3:
-        return "MR3"
-    elif system == SYSTEM_LT6R:
-        return "LT6R"
-    elif system == SYSTEM_6LTO:
-        return "6LTO"
-    else:
+    try:
+        return {
+            SYSTEM_TN2: "TN2",
+            SYSTEM_DTR: "DTR",
+            SYSTEM_MR3: "MR3",
+            SYSTEM_LT6R: "LT6R",
+            SYSTEM_PnJ: "PnJ",
+            SYSTEM_ACCAS: "ACCAS",
+            SYSTEM_JLT2: "JLT2",
+            SYSTEM_6LTO: "6LTO"
+        }[system]
+    except KeyError:
         raise ValueError(f"Unknown system: '{system}'.")
 
 
@@ -88,6 +92,7 @@ def notify_from_email(subject, body):
 
     body_match = re.match(BODY_REGEX, body)
     system = tidied(body_match["system"])
+    if system == "JLT2": return     # Remove this line when we want JLT2 picks.
 
     if notification_type == "NEW-SELECTION":
         if system == "6LTO":
