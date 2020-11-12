@@ -47,11 +47,11 @@ def log(string):
     print(f"[{datetime.now().isoformat()}] {string}")
 
 
-def handle_error(message):
+def handle_error(message, *, alert=True):
     """Log the given error and notify the relevant people."""
     log(message)
     traceback.print_exc(file=sys.stdout)
-    notify(f"<@203581825451425792> <@256567031481106433> {message}")
+    notify(f"{'<@203581825451425792> <@256567031481106433> ' if alert else ''}{message}")
     print("")
 
 
@@ -139,7 +139,7 @@ def loop():
         data = retrieve_emails()
         email_ids = data[0].split()
     except Exception:
-        handle_error("[ERROR] Failed to retrieve emails.")
+        handle_error("[ERROR] Failed to retrieve emails.", alert=False)
 
     for email_id in email_ids:
         try:
