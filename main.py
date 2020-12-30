@@ -29,6 +29,7 @@ SYSTEM_MR3 = "JR-MR3.2"
 SYSTEM_LT6R = "JR - LT6R"
 SYSTEM_PnJ = "jockey+pace"
 SYSTEM_ACCAS = "JR - ACCAS"
+SYSTEM_TJS = "tjs"
 SYSTEM_JLT2 = "JR-JLT2"
 SYSTEM_6LTO = "JR &gt;=6 + jockey"
 SYSTEM_ALLOUT = "JR-ALLOUT"
@@ -41,10 +42,12 @@ SYSTEM_NTF_CHELTENHAM_1 = "NTF Cheltenham"
 SYSTEM_NTF_CHELTENHAM_2 = "cheltsLTOstiff"
 SYSTEM_DTR_HURDLES_ONLY = "DTR Hurdles Only"
 SYSTEM_UK_TRAVELLERS = "UK Travellers"
+SYSTEM_SPTT = "SPTT"
+SYSTEM_SPTJ = "SPTJ"
 
-SYSTEMS = (SYSTEM_TN2, SYSTEM_DTR, SYSTEM_MR3, SYSTEM_LT6R, SYSTEM_PnJ, SYSTEM_ACCAS, SYSTEM_JLT2, SYSTEM_6LTO,
+SYSTEMS = (SYSTEM_TN2, SYSTEM_DTR, SYSTEM_MR3, SYSTEM_LT6R, SYSTEM_TJS, SYSTEM_ACCAS, SYSTEM_JLT2, SYSTEM_6LTO,
            SYSTEM_ALLOUT, SYSTEM_PACE, SYSTEM_EASED, SYSTEM_TOP_OF_POWER, SYSTEM_TOP_SPEED_AND_JOCKEY,
-           SYSTEM_NTF_CHELTENHAM_1, SYSTEM_NTF_CHELTENHAM_2, SYSTEM_DTR_HURDLES_ONLY, SYSTEM_UK_TRAVELLERS)
+           SYSTEM_NTF_CHELTENHAM_1, SYSTEM_NTF_CHELTENHAM_2, SYSTEM_DTR_HURDLES_ONLY, SYSTEM_SPTT, SYSTEM_SPTJ)
 
 SUBJECT_REGEX = r"PROFORM (?P<type>NEW\-SELECTION|NON\-RUNNER|SWAP BET) \((?P<horse>[a-zA-Z ']+)\-(?P<time>[0-9]{2}\:[0-9]{2})\-(?P<course>[a-zA-Z \-]+)\)"
 SYSTEM_REGEX = r"|".join((system.replace(r".", r"\.").replace(r"+", r"\+") for system in SYSTEMS))
@@ -77,6 +80,7 @@ def tidied(system):
             SYSTEM_MR3: "MR3",
             SYSTEM_LT6R: "LT6R",
             SYSTEM_PnJ: "PnJ",
+            SYSTEM_TJS: "TJS",
             SYSTEM_ACCAS: "ACCAS",
             SYSTEM_JLT2: "JLT2",
             SYSTEM_6LTO: "6LTO",
@@ -88,7 +92,9 @@ def tidied(system):
             SYSTEM_NTF_CHELTENHAM_1: "NTF1",
             SYSTEM_NTF_CHELTENHAM_2: "NTF2",
             SYSTEM_DTR_HURDLES_ONLY: "DTRH",
-            SYSTEM_UK_TRAVELLERS: "UKT"
+            SYSTEM_UK_TRAVELLERS: "UKT",
+            SYSTEM_SPTT: "SPTT",
+            SYSTEM_SPTJ: "SPTJ"
         }[system]
     except KeyError:
         raise ValueError(f"Unknown system: '{system}'.")
@@ -143,11 +149,11 @@ def get_roles(system):
         roles = ("761914927127593000",)     # @BSP
     elif system == "JLT2":
         roles = ("777667768207540315",)     # @7
-    elif system == "PnJ":
-        roles = ("776926973121265666", "757791393035845742")    # @BSP9 @Notifications
-    elif system in ("TN2", "DTR", "MR3", "LT6R", "ACCAS"):  # EP Systems (#6-systems)
+    # elif system == "PnJ":
+    #     roles = ("776926973121265666", "757791393035845742")    # @BSP9 @Notifications
+    elif system in ("TN2", "DTR", "MR3", "LT6R", "ACCAS", "TJS"):  # EP Systems (#6-systems)
         roles = ("757791393035845742",)     # @Notifications
-    elif system in ("PACED", "EASED", "TOP", "SnJ", "NTF1", "NTF2", "DTRH", "UKT"):     # BSP9 Systems (#bsp9)
+    elif system in ("PACED", "EASED", "TOP", "SnJ", "NTF1", "NTF2", "DTRH", "SPTT", "SPTJ"):     # BSP9 Systems (#bsp9)
         roles = ("776926973121265666",)     # @BSP9
     else:
         notify(f"<@203581825451425792> Unknown system '{system}'! Send help.")
